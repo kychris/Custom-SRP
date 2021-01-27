@@ -75,6 +75,7 @@ partial class CameraRenderer
         }
 
         var filteringSettings = FilteringSettings.defaultValue;
+
         context.DrawRenderers(
             cullingResults, ref drawingSettings, ref filteringSettings
         );

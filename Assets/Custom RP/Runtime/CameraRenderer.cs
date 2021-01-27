@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 
 public partial class CameraRenderer
 {
-    //parameters
+    // Parameters
     ScriptableRenderContext context;
     Camera camera;
 
@@ -58,13 +58,15 @@ public partial class CameraRenderer
         // Determine whether orthographic or distance-based sorting applies.
         var sortingSettings = new SortingSettings(camera)
         {
-            criteria = SortingCriteria.CommonOpaque //force draw order
+            // Force draw order
+            criteria = SortingCriteria.CommonOpaque
         };
+
         var drawingSettings = new DrawingSettings(
             unlitShaderTagId, sortingSettings
         );
 
-        // Indicate which render queues are allowed, here include non transparent
+        // Indicate which render queues are allowed, filter for non transparent
         var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
         context.DrawRenderers(
             cullingResults, ref drawingSettings, ref filteringSettings
@@ -111,6 +113,4 @@ public partial class CameraRenderer
         // Clear buffer for further reuse
         buffer.Clear();
     }
-
-
 }
