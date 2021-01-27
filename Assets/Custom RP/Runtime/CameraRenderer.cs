@@ -22,10 +22,13 @@ public partial class CameraRenderer
         this.context = context;
         this.camera = camera;
 
-        PrepareBuffer(); //give each camera unique buffer
-        PrepareForSceneWindow(); //render UI
+        // Give each camera unique buffer
+        PrepareBuffer();
+        // Render UI
+        PrepareForSceneWindow();
 
-        if (!Cull()) //abort if cull failed
+        // Abort if cull failed
+        if (!Cull())
         {
             return;
         }
@@ -34,20 +37,25 @@ public partial class CameraRenderer
         DrawVisibleGeometry();
         DrawUnsupportedShaders();
         DrawGizmos();
-        Submit(); //execute the queued work
+        // Execute the queued work
+        Submit();
     }
 
+    // Setup view projection matrix 
     void Setup()
-    { //setup view projection matrix 
+    {
         context.SetupCameraProperties(camera);
-        buffer.ClearRenderTarget(true, true, Color.clear); //clear last projected frame: depth, color, color to reset
+
+        // Clear last projected frame: depth, color, color to reset
+        buffer.ClearRenderTarget(true, true, Color.clear);
+
         buffer.BeginSample(SampleName);
         ExecuteBuffer();
     }
 
     void DrawVisibleGeometry()
     {
-        //determine whether orthographic or distance-based sorting applies.
+        // Determine whether orthographic or distance-based sorting applies.
         var sortingSettings = new SortingSettings(camera)
         {
             criteria = SortingCriteria.CommonOpaque //force draw order
@@ -56,16 +64,16 @@ public partial class CameraRenderer
             unlitShaderTagId, sortingSettings
         );
 
-        //indicate which render queues are allowed, here include non transparent
+        // Indicate which render queues are allowed, here include non transparent
         var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
         context.DrawRenderers(
             cullingResults, ref drawingSettings, ref filteringSettings
         );
 
-        //draw skybox with dedicated method
+        // Draw skybox with dedicated method
         context.DrawSkybox(camera);
 
-        //draw transparent objects after skybox
+        // Draw transparent objects after skybox
         sortingSettings.criteria = SortingCriteria.CommonTransparent;
         drawingSettings.sortingSettings = sortingSettings;
         filteringSettings.renderQueueRange = RenderQueueRange.transparent;
@@ -77,16 +85,19 @@ public partial class CameraRenderer
     bool Cull()
     {
         ScriptableCullingParameters p;
+
+        // If parameters can be retrieved, store results and ret true
         if (camera.TryGetCullingParameters(out p))
-        { //if parameters can be retrieved, store results and ret true
-            //use ref to pass as reference
+        {
+            // Use ref to pass as reference
             cullingResults = context.Cull(ref p); //ref same as out, except not required overwrite
             return true;
         }
         return false;
     }
 
-    void Submit() //submit the buffered context to execution
+    // Submit the buffered context to execution
+    void Submit()
     {
         buffer.EndSample(SampleName);
         ExecuteBuffer();
@@ -95,8 +106,10 @@ public partial class CameraRenderer
 
     void ExecuteBuffer()
     {
-        context.ExecuteCommandBuffer(buffer); //executes buffer
-        buffer.Clear(); //clear buffer for further reuse
+        // Executes buffer
+        context.ExecuteCommandBuffer(buffer);
+        // Clear buffer for further reuse
+        buffer.Clear();
     }
 
 

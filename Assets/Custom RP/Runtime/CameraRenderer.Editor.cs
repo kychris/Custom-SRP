@@ -3,9 +3,11 @@ using UnityEngine.Rendering;
 using UnityEditor;
 using UnityEngine.Profiling;
 
-partial class CameraRenderer //use partial class to organize code
+
+// Use partial class to organize code
+partial class CameraRenderer
 {
-    //declare signature to be callable
+    // Declare signature to be callable
     partial void DrawGizmos();
     partial void DrawUnsupportedShaders();
     partial void PrepareForSceneWindow();
@@ -13,8 +15,11 @@ partial class CameraRenderer //use partial class to organize code
 
 
 #if UNITY_EDITOR
-    //shader variables
-    static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"); //unlit shader
+    // Shader variables
+
+    // Unlit shader
+    static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+    // All unity default shaders
     static ShaderTagId[] legacyShaderTagIds = { //all unity default shaders
 		new ShaderTagId("Always"),
         new ShaderTagId("ForwardBase"),
@@ -27,7 +32,8 @@ partial class CameraRenderer //use partial class to organize code
 
     string SampleName { get; set; }
 
-    partial void DrawGizmos() //draw gizmos in editor
+    // Draw gizmos in editor
+    partial void DrawGizmos()
     {
         if (Handles.ShouldRenderGizmos())
         {
@@ -36,7 +42,8 @@ partial class CameraRenderer //use partial class to organize code
         }
     }
 
-    partial void PrepareForSceneWindow() //draw UI in editor
+    // Draw UI in editor
+    partial void PrepareForSceneWindow()
     {
         if (camera.cameraType == CameraType.SceneView)
         {
@@ -44,9 +51,11 @@ partial class CameraRenderer //use partial class to organize code
         }
     }
 
+    // Function for drawing unity shaders
     partial void DrawUnsupportedShaders()
-    { //function for drawing unity shaders
-        if (errorMaterial == null) //define error material as default
+    {
+        // Define error material as default pink
+        if (errorMaterial == null)
         {
             errorMaterial =
                 new Material(Shader.Find("Hidden/InternalErrorShader"));
@@ -56,7 +65,8 @@ partial class CameraRenderer //use partial class to organize code
             legacyShaderTagIds[0], new SortingSettings(camera)
         )
         {
-            overrideMaterial = errorMaterial //set unsupported material
+            // Set unsupported material
+            overrideMaterial = errorMaterial
         };
 
         for (int i = 1; i < legacyShaderTagIds.Length; i++)
@@ -70,15 +80,16 @@ partial class CameraRenderer //use partial class to organize code
         );
     }
 
-    partial void PrepareBuffer() //assign unique buffer to each camera
+    // Assign unique buffer to each camera
+    partial void PrepareBuffer()
     {
-        Profiler.BeginSample("Editor Only"); //wrap in profiler sample to check memory usage
+        // Wrap in profiler sample to check memory usage
+        Profiler.BeginSample("Editor Only");
         buffer.name = SampleName = camera.name;
         Profiler.EndSample();
     }
 
 #else
-
     const string SampleName = bufferName;
 
 
